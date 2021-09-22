@@ -12,3 +12,6 @@ spring:
     properties:
       hibernate:
          format_sql: false
+logging:
+  pattern:
+    console: -- %msg%n

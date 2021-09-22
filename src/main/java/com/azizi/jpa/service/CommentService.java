@@ -13,10 +13,13 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Tuple;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
+@SuppressWarnings("")
 public class CommentService {
 
     private final CommentRepository commentRepository;
@@ -46,38 +49,38 @@ public class CommentService {
     }
 
     public void getCommentsWithIssue() {
-        System.out.println("\nGetting comments and users with n+1 problem\n");
+        log.info("Getting comments and users with n+1 problem");
         List<Comment> comments = commentRepository.findAll();
-        comments.forEach(System.out::println);
+        comments.forEach(comment -> log.info("Comment {}", comment));
     }
 
     public void getCommentsWithOuterJoinFetch() {
-        System.out.println("\nGetting comments and users with outer join fetch\n");
+        log.info("Getting comments and users with outer join fetch");
         List<Comment> comments = entityManager.createQuery("select c from Comment c left join fetch c.user u",
                         Comment.class)
                 .getResultList();
-        comments.forEach(System.out::println);
+        comments.forEach(comment -> log.info("Comment {}", comment));
     }
 
     public void getCommentsWithEntityGraphAndEntityManager() {
-        System.out.println("\nGetting comments and users with entity graph and entity manager\n");
+        log.info("Getting comments and users with entity graph and entity manager");
         EntityGraph<?> entityGraph = entityManager.createEntityGraph(Comment.WITH_USER_GRAPH);
         List<Comment> comments = entityManager.createQuery("select c from Comment c", Comment.class)
                 .setHint("javax.persistence.fetchgraph", entityGraph)
                 .getResultList();
-        comments.forEach(System.out::println);
+        comments.forEach(comment -> log.info("Comment {}", comment));
     }
 
     public void getCommentsWithEntityGraphAndSpringDataJpa() {
-        System.out.println("\nGetting comments and users with entity graph and spring data jpa\n");
+        log.info("Getting comments and users with entity graph and spring data jpa");
         List<Comment> comments = commentRepository.findAllByOrderById();
-        comments.forEach(System.out::println);
+        comments.forEach(comment -> log.info("Comment {}", comment));
 
         //  List<Comment> comments = commentRepository.findAllByOrderByIdDesc();  you can use this method as well
     }
 
     public void getCommentsWithNativeSqlQuery() {
-        System.out.println("\nGetting comments and users with native sql query\n");
+        log.info("Getting comments and users with native sql query");
         List<Tuple> tuples = entityManager.createNativeQuery("select c.id id, c.text, c.user_id userId, " +
                                 "u.name userName from comments c left outer join users u on c.user_id=u.id",
                         Tuple.class)
@@ -96,7 +99,7 @@ public class CommentService {
                     .text(text)
                     .user(user)
                     .build();
-            System.out.println(comment);
+            log.info("Comment {}", comment);
         }
     }
 
