@@ -15,6 +15,7 @@ import javax.persistence.Tuple;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -40,19 +41,16 @@ public class CommentService {
                     .build();
         }).collect(Collectors.toList());
         commentRepository.saveAll(comments);
-        getCommentsWithIssue();
-        getCommentsWithOuterJoinFetch();
-        getCommentsWithEntityGraphAndEntityManager();
-        getCommentsWithEntityGraphAndSpringDataJpa();
-        getCommentsWithNativeSqlQuery();
     }
 
+    @Transactional
     public void getCommentsWithIssue() {
         log.info("Getting comments and users with n+1 problem");
         List<Comment> comments = commentRepository.findAll();
         comments.forEach(comment -> log.info("Comment {}", comment));
     }
 
+    @Transactional
     public void getCommentsWithOuterJoinFetch() {
         log.info("Getting comments and users with outer join fetch");
         List<Comment> comments = entityManager.createQuery("select c from Comment c left join fetch c.user u",
@@ -61,6 +59,7 @@ public class CommentService {
         comments.forEach(comment -> log.info("Comment {}", comment));
     }
 
+    @Transactional
     public void getCommentsWithEntityGraphAndEntityManager() {
         log.info("Getting comments and users with entity graph and entity manager");
         EntityGraph<?> entityGraph = entityManager.createEntityGraph(Comment.WITH_USER_GRAPH);
@@ -70,6 +69,7 @@ public class CommentService {
         comments.forEach(comment -> log.info("Comment {}", comment));
     }
 
+    @Transactional
     public void getCommentsWithEntityGraphAndSpringDataJpa() {
         log.info("Getting comments and users with entity graph and spring data jpa");
         List<Comment> comments = commentRepository.findAllByOrderById();

@@ -14,4 +14,4 @@ spring:
          format_sql: false
 logging:
   pattern:
-    console: -- %msg%n
+    console: "\t%msg%n"
