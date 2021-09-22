@@ -48,13 +48,13 @@ public class CommentService {
     }
 
     public void getCommentsWithIssue() {
-        log.info("Getting comments and users with n+1 problem");
+        log.info("Getting comments and users using n+1 problem");
         List<Comment> comments = commentRepository.findAll();
         comments.forEach(comment -> log.info("Comment {}", comment));
     }
 
     public void getCommentsWithOuterJoinFetch() {
-        log.info("Getting comments and users with outer join fetch");
+        log.info("Getting comments and users using outer join fetch");
         List<Comment> comments = entityManager.createQuery("select c from Comment c left join fetch c.user u",
                         Comment.class)
                 .getResultList();
@@ -62,7 +62,7 @@ public class CommentService {
     }
 
     public void getCommentsWithEntityGraphAndEntityManager() {
-        log.info("Getting comments and users with entity graph and entity manager");
+        log.info("Getting comments and users using entity graph and entity manager");
         EntityGraph<?> entityGraph = entityManager.createEntityGraph(Comment.WITH_USER_GRAPH);
         List<Comment> comments = entityManager.createQuery("select c from Comment c", Comment.class)
                 .setHint("javax.persistence.fetchgraph", entityGraph)
@@ -71,7 +71,7 @@ public class CommentService {
     }
 
     public void getCommentsWithEntityGraphAndSpringDataJpa() {
-        log.info("Getting comments and users with entity graph and spring data jpa");
+        log.info("Getting comments and users using entity graph and spring data jpa");
         List<Comment> comments = commentRepository.findAllByOrderById();
         comments.forEach(comment -> log.info("Comment {}", comment));
 
@@ -79,7 +79,7 @@ public class CommentService {
     }
 
     public void getCommentsWithNativeSqlQuery() {
-        log.info("Getting comments and users with native sql query");
+        log.info("Getting comments and users using native sql query");
         List<Tuple> tuples = entityManager.createNativeQuery("select c.id id, c.text, c.user_id userId, " +
                                 "u.name userName from comments c left outer join users u on c.user_id=u.id",
                         Tuple.class)
